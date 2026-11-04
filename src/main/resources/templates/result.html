@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="DropSense - Giao diện trình bày mức độ nguy cơ và khuyến nghị học tập">
+  <title>Kết quả đánh giá | DropSense</title>
+  <link rel="stylesheet" href="../static/css/style.css" th:href="@{/css/style.css}">
+  <script defer src="../static/js/main.js" th:src="@{/js/main.js}"></script>
+</head>
+<body>
+  <header class="topbar" th:replace="~{fragments/header :: siteHeader('assessment')}"><div class="container nav-inner">
+    <a class="brand" href="students.html" th:href="@{/students}" aria-label="DropSense - Danh sách sinh viên"><span class="brand-mark">D<span class="brand-mark-dot">.</span></span><span class="brand-copy"><strong>DropSense</strong><small>Student Risk Management</small></span></a>
+    <nav class="nav-links" aria-label="Điều hướng chính"><a class="nav-link" href="students.html" th:href="@{/students}">Sinh viên</a><a class="nav-link" href="student-form.html" th:href="@{/students/new}">Thêm mới</a><a class="nav-link is-active" href="assessment.html" th:remove="all" aria-current="page">Đánh giá <span class="nav-tag">Xem thử</span></a><span class="nav-link is-active" style="display:none" th:style="'display:inline-flex'">Đánh giá <span class="nav-tag">Chờ Backend</span></span></nav>
+  </div></header>
+  <main class="container page-main page-narrow">
+    <nav class="breadcrumbs" aria-label="Đường dẫn"><a href="students.html" th:href="@{/students}">Sinh viên</a><span aria-hidden="true">/</span><span>Kết quả đánh giá</span></nav>
+    <section class="page-heading form-heading"><div><p class="eyebrow">BÁO CÁO ĐÁNH GIÁ <span class="eyebrow-line"></span> DROPSENSE</p><h1>Kết quả đánh giá nguy cơ</h1><p class="page-subtitle">Tổng hợp mức nguy cơ, dấu hiệu cần lưu ý và hướng hỗ trợ sinh viên.</p></div></section>
+
+    <!-- Nội dung minh họa chỉ tồn tại khi mở HTML trực tiếp; Thymeleaf xóa toàn bộ. -->
+    <div th:remove="all" class="result-demo">
+      <div class="preview-note" role="status"><span class="preview-note-dot"></span><div><strong>Dữ liệu minh họa – không phải kết quả thật.</strong> Mức nguy cơ, dấu hiệu và khuyến nghị dưới đây chỉ để trình bày giao diện; không do thuật toán tính ra.</div></div>
+      <section class="result-overview panel" aria-labelledby="risk-overview-title">
+        <div class="result-student"><p class="summary-kicker">HỒ SƠ ĐƯỢC ĐÁNH GIÁ</p><h2 id="risk-overview-title">Nguyễn Minh Anh</h2><p><span class="student-id">SV2026001</span> <span class="result-separator">·</span> Sinh viên</p></div>
+        <div class="risk-box risk-box-medium"><p>MỨC NGUY CƠ (MẪU)</p><div class="risk-status"><span class="risk-status-dot"></span><strong>Trung bình</strong></div><span class="risk-caption">Ví dụ hiển thị — chưa đánh giá thực tế</span></div>
+      </section>
+      <section class="panel result-section"><div class="section-header-row"><div><p class="summary-kicker">THÔNG TIN HỌC TẬP</p><h2>Chỉ số đầu vào <span class="demo-label">Dữ liệu mẫu</span></h2></div></div>
+        <div class="metric-grid"><div class="metric"><span>GPA tích lũy</span><strong>2.30 <small>/ 4.00</small></strong></div><div class="metric"><span>GPA HK trước</span><strong>2.60 <small>/ 4.00</small></strong></div><div class="metric"><span>GPA gần nhất</span><strong>1.95 <small>/ 4.00</small></strong></div><div class="metric"><span>Học phần trượt</span><strong>2</strong></div><div class="metric"><span>Hoàn thành tín chỉ</span><strong>70%</strong></div><div class="metric"><span>Tỷ lệ chuyên cần</span><strong>68%</strong></div></div>
+      </section>
+      <section class="result-columns" aria-label="Dấu hiệu và khuyến nghị minh họa">
+        <div class="panel result-section"><div class="section-header-row"><div><p class="summary-kicker">QUAN SÁT</p><h2>Dấu hiệu cần lưu ý</h2></div><span class="demo-label">Mẫu</span></div>
+          <ul class="insight-list"><li><span class="insight-icon">!</span><div><strong>GPA học kỳ có dấu hiệu giảm</strong><p>Ví dụ mô tả được trả về từ Backend sau này.</p></div></li><li><span class="insight-icon">!</span><div><strong>Có học phần chưa đạt</strong><p>Ví dụ dấu hiệu học tập cần theo dõi.</p></div></li><li><span class="insight-icon">!</span><div><strong>Tỷ lệ chuyên cần cần cải thiện</strong><p>Ví dụ dấu hiệu từ kết quả phân tích.</p></div></li></ul>
+        </div>
+        <div class="panel result-section"><div class="section-header-row"><div><p class="summary-kicker">ĐỀ XUẤT HỖ TRỢ</p><h2>Khuyến nghị</h2></div><span class="demo-label">Mẫu</span></div>
+          <ol class="recommendation-list"><li><span>01</span><p>Trao đổi với cố vấn học tập để rà soát tiến độ học tập.</p></li><li><span>02</span><p>Ưu tiên ôn tập các học phần chưa đạt và xây dựng lịch học phù hợp.</p></li><li><span>03</span><p>Theo dõi chuyên cần và cập nhật tình hình sau mỗi học kỳ.</p></li></ol>
+        </div>
+      </section>
+      <div class="result-actions"><a class="button button-secondary" href="students.html">← Quay lại danh sách</a><a class="button button-primary" href="assessment.html">Đánh giá sinh viên khác →</a></div>
+      <div class="risk-legend"><span>Quy ước màu giao diện:</span><span class="legend-pill legend-low"><i></i>Thấp</span><span class="legend-pill legend-medium"><i></i>Trung bình</span><span class="legend-pill legend-high"><i></i>Cao</span></div>
+    </div>
+
+    <!-- Trạng thái hiện thật khi template được Thymeleaf xử lý; không hiển thị kết quả giả. -->
+    <section class="panel pending-result" style="display:none" th:style="'display:block'" aria-labelledby="pending-title">
+      <div class="pending-icon" aria-hidden="true">⌛</div>
+      <p class="summary-kicker">CHƯA TÍCH HỢP BACKEND RISK</p>
+      <h2 id="pending-title">Chưa có kết quả đánh giá thực tế</h2>
+      <p>Backend chưa cung cấp RiskController, RiskResult và dữ liệu Model. Giao diện kết quả sẽ được liên kết sau khi thống nhất các trường mức nguy cơ, dấu hiệu và khuyến nghị.</p>
+      <a class="button button-secondary" href="students.html" th:href="@{/students}">← Quay lại danh sách</a>
+    </section>
+  </main>
+  <footer class="site-footer"><div class="container"><span>© 2026 DropSense · Trương Hoàng Vũ &amp; Võ Nguyễn Vinh Toàn</span><span>Đồ án môn học – Công nghệ phần mềm</span></div></footer>
+</body>
+</html>

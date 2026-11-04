@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="DropSense - Thêm hoặc chỉnh sửa hồ sơ sinh viên">
+  <title>Thông tin sinh viên | DropSense</title>
+  <link rel="stylesheet" href="../static/css/style.css" th:href="@{/css/style.css}">
+  <script defer src="../static/js/main.js" th:src="@{/js/main.js}"></script>
+</head>
+<body>
+  <header class="topbar" th:replace="~{fragments/header :: siteHeader('form')}"><div class="container nav-inner">
+    <a class="brand" href="students.html" th:href="@{/students}" aria-label="DropSense - Danh sách sinh viên"><span class="brand-mark">D<span class="brand-mark-dot">.</span></span><span class="brand-copy"><strong>DropSense</strong><small>Student Risk Management</small></span></a>
+    <nav class="nav-links" aria-label="Điều hướng chính"><a class="nav-link" href="students.html" th:href="@{/students}">Sinh viên</a><a class="nav-link is-active" href="student-form.html" th:href="@{/students/new}" aria-current="page">Thêm mới</a><a class="nav-link" href="assessment.html" th:remove="all">Đánh giá <span class="nav-tag">Xem thử</span></a><span class="nav-link is-disabled" title="Chờ RiskController" style="display:none" th:style="'display:inline-flex'">Đánh giá <span class="nav-tag">Chờ Backend</span></span></nav>
+  </div></header>
+  <main class="container page-main page-narrow">
+    <nav class="breadcrumbs" aria-label="Đường dẫn"><a href="students.html" th:href="@{/students}">Sinh viên</a><span aria-hidden="true">/</span><span>Hồ sơ sinh viên</span></nav>
+    <div class="preview-note" th:remove="all" role="status"><span class="preview-note-dot"></span><div><strong>Chế độ xem thử.</strong> Form chỉ trình bày giao diện. Dữ liệu sẽ được gửi thật khi mở qua Spring Boot và có Backend tương ứng.</div></div>
+    <section class="page-heading form-heading">
+      <div><p class="eyebrow">QUẢN LÝ SINH VIÊN <span class="eyebrow-line"></span> HỒ SƠ</p><h1 th:text="${formAction != null and #strings.contains(formAction, '/update/')} ? 'Chỉnh sửa thông tin sinh viên' : 'Thêm sinh viên mới'">Thêm sinh viên mới</h1><p class="page-subtitle">Điền thông tin định danh và kết quả học tập của sinh viên.</p></div>
+    </section>
+    <form class="panel form-panel" method="post" action="#" th:action="${formAction}" th:object="${student}" data-validate-form novalidate>
+      <div class="form-section">
+        <div class="section-heading"><span class="section-number">01</span><div><h2>Thông tin cá nhân</h2><p>Mã sinh viên và họ tên là hai trường bắt buộc.</p></div></div>
+        <div class="form-grid">
+          <div class="field"><label for="studentId">Mã số sinh viên <span class="required-mark">*</span></label><input id="studentId" name="studentId" th:field="*{studentId}" th:readonly="${formAction != null and #strings.contains(formAction, '/update/')}" type="text" maxlength="20" required placeholder="Ví dụ: SV2026001" autocomplete="off"><small class="field-hint">Tối đa 20 ký tự. Không thể đổi MSSV khi chỉnh sửa.</small><p class="field-error" data-error-for="studentId"></p></div>
+          <div class="field"><label for="fullName">Họ và tên <span class="required-mark">*</span></label><input id="fullName" name="fullName" th:field="*{fullName}" type="text" maxlength="100" required placeholder="Nhập họ và tên đầy đủ" autocomplete="name"><small class="field-hint">Tối đa 100 ký tự.</small><p class="field-error" data-error-for="fullName"></p></div>
+        </div>
+      </div>
+      <div class="section-divider"></div>
+      <div class="form-section">
+        <div class="section-heading"><span class="section-number">02</span><div><h2>Kết quả học tập</h2><p>Các trường này tương ứng với Entity <code>Student</code>; có thể để trống nếu chưa có dữ liệu.</p></div></div>
+        <div class="form-grid form-grid-three">
+          <div class="field"><label for="gpa">GPA tích lũy</label><div class="input-unit"><input id="gpa" name="gpa" th:field="*{gpa}" type="number" min="0" max="4" step="0.01" placeholder="0.00" inputmode="decimal"><span>/ 4.00</span></div><p class="field-error" data-error-for="gpa"></p></div>
+          <div class="field"><label for="previousGpa">GPA học kỳ trước</label><div class="input-unit"><input id="previousGpa" name="previousGpa" th:field="*{previousGpa}" type="number" min="0" max="4" step="0.01" placeholder="0.00" inputmode="decimal"><span>/ 4.00</span></div><p class="field-error" data-error-for="previousGpa"></p></div>
+          <div class="field"><label for="currentGpa">GPA học kỳ gần nhất</label><div class="input-unit"><input id="currentGpa" name="currentGpa" th:field="*{currentGpa}" type="number" min="0" max="4" step="0.01" placeholder="0.00" inputmode="decimal"><span>/ 4.00</span></div><p class="field-error" data-error-for="currentGpa"></p></div>
+          <div class="field"><label for="failedCourses">Số học phần trượt</label><input id="failedCourses" name="failedCourses" th:field="*{failedCourses}" type="number" min="0" step="1" placeholder="0" inputmode="numeric"><p class="field-error" data-error-for="failedCourses"></p></div>
+          <div class="field"><label for="creditCompletionRate">Tỷ lệ hoàn thành tín chỉ</label><div class="input-unit"><input id="creditCompletionRate" name="creditCompletionRate" th:field="*{creditCompletionRate}" type="number" min="0" max="100" step="0.01" placeholder="0.00" inputmode="decimal"><span>%</span></div><p class="field-error" data-error-for="creditCompletionRate"></p></div>
+          <div class="field"><label for="attendanceRate">Tỷ lệ chuyên cần</label><div class="input-unit"><input id="attendanceRate" name="attendanceRate" th:field="*{attendanceRate}" type="number" min="0" max="100" step="0.01" placeholder="0.00" inputmode="decimal"><span>%</span></div><p class="field-error" data-error-for="attendanceRate"></p></div>
+        </div>
+        <div class="info-callout"><span class="info-icon">i</span><p>Form đang kiểm tra GPA theo thang <strong>0–4</strong> và phần trăm <strong>0–100</strong>. Entity hiện chưa quy định thang GPA; cần xác nhận thang điểm với Vũ trước khi nhập dữ liệu thật.</p></div>
+      </div>
+      <div class="form-actions"><a class="button button-secondary" href="students.html" th:href="@{/students}">← Quay lại</a><button class="button button-primary" type="submit"><span class="button-symbol">✓</span> Lưu thông tin</button></div>
+    </form>
+  </main>
+  <footer class="site-footer"><div class="container"><span>© 2026 DropSense · Trương Hoàng Vũ &amp; Võ Nguyễn Vinh Toàn</span><span>Đồ án môn học – Công nghệ phần mềm</span></div></footer>
+</body>
+</html>

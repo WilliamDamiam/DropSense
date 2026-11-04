@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<body>
+  <!-- Dùng trong header.html; đánh dấu tab đang mở bằng biến activePage -->
+  <nav class="nav-links" aria-label="Điều hướng chính" th:fragment="mainNav(activePage)">
+    <a class="nav-link" href="../students.html" th:href="@{/students}"
+       th:classappend="${activePage == 'students'} ? 'is-active' : ''"
+       th:attr="aria-current=${activePage == 'students' ? 'page' : null}">Sinh viên</a>
+    <a class="nav-link" href="../student-form.html" th:href="@{/students/new}"
+       th:classappend="${activePage == 'form'} ? 'is-active' : ''"
+       th:attr="aria-current=${activePage == 'form' ? 'page' : null}">Thêm mới</a>
+    <!-- Tuần 1 chưa có RiskController: không gắn link giả dẫn tới 404. -->
+    <span class="nav-link is-disabled" title="Chưa triển khai RiskController">
+      Đánh giá <span class="nav-tag">Tuần 2</span>
+    </span>
+  </nav>
+</body>
+</html>

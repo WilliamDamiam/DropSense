@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="DropSense - Giao diện nhập dữ liệu đánh giá nguy cơ bỏ học">
+  <title>Đánh giá nguy cơ | DropSense</title>
+  <link rel="stylesheet" href="../static/css/style.css" th:href="@{/css/style.css}">
+  <script defer src="../static/js/main.js" th:src="@{/js/main.js}"></script>
+</head>
+<body>
+  <header class="topbar" th:replace="~{fragments/header :: siteHeader('assessment')}"><div class="container nav-inner">
+    <a class="brand" href="students.html" th:href="@{/students}" aria-label="DropSense - Danh sách sinh viên"><span class="brand-mark">D<span class="brand-mark-dot">.</span></span><span class="brand-copy"><strong>DropSense</strong><small>Student Risk Management</small></span></a>
+    <nav class="nav-links" aria-label="Điều hướng chính"><a class="nav-link" href="students.html" th:href="@{/students}">Sinh viên</a><a class="nav-link" href="student-form.html" th:href="@{/students/new}">Thêm mới</a><a class="nav-link is-active" href="assessment.html" aria-current="page" th:remove="all">Đánh giá <span class="nav-tag">Xem thử</span></a><span class="nav-link is-active" style="display:none" th:style="'display:inline-flex'">Đánh giá <span class="nav-tag">Chờ Backend</span></span></nav>
+  </div></header>
+  <main class="container page-main page-narrow">
+    <nav class="breadcrumbs" aria-label="Đường dẫn"><a href="students.html" th:href="@{/students}">Sinh viên</a><span aria-hidden="true">/</span><span>Đánh giá nguy cơ</span></nav>
+    <section class="page-heading form-heading"><div><p class="eyebrow">ĐÁNH GIÁ HỌC TẬP <span class="eyebrow-line"></span> DROPSENSE</p><h1>Đánh giá nguy cơ bỏ học</h1><p class="page-subtitle">Cung cấp các chỉ số học tập để phục vụ quá trình đánh giá của Backend.</p></div></section>
+    <div class="integration-alert" role="status"><span class="integration-symbol" aria-hidden="true">!</span><div><strong>Chờ tích hợp chức năng đánh giá</strong><p>Chưa nhận được RiskController, RiskService và cấu trúc kết quả. Nút đánh giá hiện chưa gửi dữ liệu và không tính toán nguy cơ. Đây chỉ là giao diện nhập liệu.</p></div></div>
+    <!-- Backend Risk chưa cung cấp action URL và tên Model. Không tự khai báo th:action hay thuật toán giả. -->
+    <form class="panel form-panel" method="post" action="#" data-validate-form data-pending-submit novalidate>
+      <div class="form-section">
+        <div class="section-heading"><span class="section-number">01</span><div><h2>Chọn sinh viên</h2><p>Lựa chọn hồ sơ cần đánh giá; danh sách thật sẽ do Backend cung cấp.</p></div></div>
+        <div class="form-grid"><div class="field field-full"><label for="assessmentStudentId">Sinh viên cần đánh giá <span class="required-mark">*</span></label><select id="assessmentStudentId" name="studentId" required><option value="">-- Chọn sinh viên --</option><option th:each="s : ${students}" th:value="${s.studentId}" th:text="${s.studentId + ' — ' + s.fullName}">SV0000000 — Sinh viên</option><option value="SV2026001" th:remove="all">SV2026001 — Nguyễn Minh Anh (dữ liệu mẫu)</option><option value="SV2026002" th:remove="all">SV2026002 — Trần Quốc Bảo (dữ liệu mẫu)</option></select><p class="field-error" data-error-for="assessmentStudentId"></p></div></div>
+      </div>
+      <div class="section-divider"></div>
+      <div class="form-section">
+        <div class="section-heading"><span class="section-number">02</span><div><h2>Chỉ số học tập</h2><p>Tên trường dựa trên Entity <code>Student</code> hiện có. Chưa phân biệt học phần trượt gần nhất và tổng số do Backend chưa định nghĩa.</p></div></div>
+        <div class="form-grid form-grid-three">
+          <div class="field"><label for="gpa">GPA tích lũy <span class="required-mark">*</span></label><div class="input-unit"><input id="gpa" name="gpa" type="number" min="0" max="4" step="0.01" required placeholder="0.00" inputmode="decimal"><span>/ 4.00</span></div><p class="field-error" data-error-for="gpa"></p></div>
+          <div class="field"><label for="previousGpa">GPA học kỳ trước <span class="required-mark">*</span></label><div class="input-unit"><input id="previousGpa" name="previousGpa" type="number" min="0" max="4" step="0.01" required placeholder="0.00" inputmode="decimal"><span>/ 4.00</span></div><p class="field-error" data-error-for="previousGpa"></p></div>
+          <div class="field"><label for="currentGpa">GPA học kỳ gần nhất <span class="required-mark">*</span></label><div class="input-unit"><input id="currentGpa" name="currentGpa" type="number" min="0" max="4" step="0.01" required placeholder="0.00" inputmode="decimal"><span>/ 4.00</span></div><p class="field-error" data-error-for="currentGpa"></p></div>
+          <div class="field"><label for="failedCourses">Số học phần trượt <span class="required-mark">*</span></label><input id="failedCourses" name="failedCourses" type="number" min="0" step="1" required placeholder="0" inputmode="numeric"><p class="field-error" data-error-for="failedCourses"></p></div>
+          <div class="field"><label for="creditCompletionRate">Tỷ lệ hoàn thành tín chỉ <span class="required-mark">*</span></label><div class="input-unit"><input id="creditCompletionRate" name="creditCompletionRate" type="number" min="0" max="100" step="0.01" required placeholder="0.00" inputmode="decimal"><span>%</span></div><p class="field-error" data-error-for="creditCompletionRate"></p></div>
+          <div class="field"><label for="attendanceRate">Tỷ lệ chuyên cần <span class="required-mark">*</span></label><div class="input-unit"><input id="attendanceRate" name="attendanceRate" type="number" min="0" max="100" step="0.01" required placeholder="0.00" inputmode="decimal"><span>%</span></div><p class="field-error" data-error-for="attendanceRate"></p></div>
+        </div>
+        <div class="info-callout"><span class="info-icon">i</span><p>Thang GPA <strong>0–4</strong> chỉ là quy ước kiểm tra giao diện cần Vũ xác nhận. Khi Backend Risk được bổ sung, nhóm sẽ thống nhất URL POST, cấu trúc dữ liệu và số trường học phần trượt.</p></div>
+      </div>
+      <div class="form-actions form-actions-split"><a class="button button-secondary" href="students.html" th:href="@{/students}">← Quay lại</a><div class="form-actions-right"><a class="button button-quiet" href="result.html" th:remove="all">Xem mẫu kết quả →</a><button class="button button-primary" type="submit"><span class="button-symbol">→</span> Đánh giá nguy cơ</button></div></div>
+    </form>
+  </main>
+  <footer class="site-footer"><div class="container"><span>© 2026 DropSense · Trương Hoàng Vũ &amp; Võ Nguyễn Vinh Toàn</span><span>Đồ án môn học – Công nghệ phần mềm</span></div></footer>
+</body>
+</html>

@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="DropSense - Quản lý sinh viên và thông tin học tập">
+  <title>Danh sách sinh viên | DropSense</title>
+  <link rel="stylesheet" href="../static/css/style.css" th:href="@{/css/style.css}">
+  <script defer src="../static/js/main.js" th:src="@{/js/main.js}"></script>
+</head>
+<body>
+  <header class="topbar" th:replace="~{fragments/header :: siteHeader('students')}">
+    <div class="container nav-inner">
+      <a class="brand" href="students.html" th:href="@{/students}" aria-label="DropSense - Danh sách sinh viên">
+        <span class="brand-mark">D<span class="brand-mark-dot">.</span></span>
+        <span class="brand-copy"><strong>DropSense</strong><small>Student Risk Management</small></span>
+      </a>
+      <nav class="nav-links" aria-label="Điều hướng chính">
+        <a class="nav-link is-active" href="students.html" th:href="@{/students}" aria-current="page">Sinh viên</a>
+        <a class="nav-link" href="student-form.html" th:href="@{/students/new}">Thêm mới</a>
+        <a class="nav-link" href="assessment.html" th:remove="all">Đánh giá <span class="nav-tag">Xem thử</span></a>
+        <span class="nav-link is-disabled" title="Chờ RiskController" style="display:none" th:style="'display:inline-flex'">Đánh giá <span class="nav-tag">Chờ Backend</span></span>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container page-main">
+    <div class="preview-note" th:remove="all" role="status">
+      <span class="preview-note-dot"></span>
+      <div><strong>Chế độ xem thử giao diện.</strong> Các dòng sinh viên bên dưới là dữ liệu minh họa, không lấy từ MySQL. Khi chạy Thymeleaf, các dòng mẫu sẽ được thay bằng dữ liệu Backend.</div>
+    </div>
+    <section class="page-heading">
+      <div>
+        <p class="eyebrow">QUẢN LÝ HỌC TẬP <span class="eyebrow-line"></span> DROP SENSE</p>
+        <h1>Danh sách sinh viên</h1>
+        <p class="page-subtitle">Theo dõi hồ sơ và các chỉ số học tập trên cùng một giao diện.</p>
+      </div>
+      <a class="button button-primary button-add" href="student-form.html" th:href="@{/students/new}"><span class="button-symbol">+</span> Thêm sinh viên</a>
+    </section>
+
+    <section class="summary-strip" aria-label="Tổng quan">
+      <div class="summary-icon" aria-hidden="true">SV</div>
+      <div>
+        <p class="summary-kicker">HỒ SƠ SINH VIÊN</p>
+        <p class="summary-value"><span id="visibleCount" th:text="${students == null ? 0 : #lists.size(students)}">3</span> <span class="summary-unit">sinh viên đang hiển thị</span></p>
+      </div>
+      <div class="summary-side">Dữ liệu được quản lý qua Spring Boot <span class="summary-side-line">•</span> MySQL</div>
+    </section>
+
+    <section class="panel student-panel" aria-labelledby="list-heading">
+      <div class="panel-header">
+        <div>
+          <h2 id="list-heading">Hồ sơ sinh viên</h2>
+          <p class="panel-description">Danh sách và thông tin học tập hiện có.</p>
+        </div>
+        <form id="studentSearchForm" class="search-form" action="students.html" th:action="@{/students}" method="get" role="search">
+          <label class="sr-only" for="keyword">Tìm theo họ tên</label>
+          <span class="search-icon" aria-hidden="true">⌕</span>
+          <input id="keyword" type="search" name="keyword" th:value="${keyword}" placeholder="Tìm theo họ tên..." autocomplete="off" maxlength="100" >
+          <button class="button button-search" type="submit">Tìm kiếm</button>
+        </form>
+      </div>
+      <div class="helper-line"><span class="helper-bullet"></span> Tìm theo họ tên bằng dữ liệu MySQL thông qua Spring Boot.</div>
+      <p class="mobile-table-hint">Vuốt ngang để xem toàn bộ thông tin và các nút thao tác →</p>
+      <div class="table-scroll">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th scope="col">Mã sinh viên</th>
+              <th scope="col">Họ và tên</th>
+              <th scope="col" class="numeric">GPA tích lũy</th>
+              <th scope="col" class="numeric">GPA HK trước</th>
+              <th scope="col" class="numeric">GPA gần nhất</th>
+              <th scope="col" class="numeric">HP trượt</th>
+              <th scope="col" class="numeric">Hoàn thành TC</th>
+              <th scope="col" class="numeric">Chuyên cần</th>
+              <th scope="col">Thao tác</th>
+            </tr>
+          </thead>
+          <tbody id="studentRows">
+            <!-- Dòng này được Thymeleaf nhân theo model 'students'; nội dung tĩnh chỉ để xem thử. -->
+            <tr data-student-row th:each="s : ${students}">
+              <td><span class="student-id" th:text="${s.studentId}">SV2026001</span></td>
+              <td><div class="student-person"><span class="avatar-initial" aria-hidden="true">SV</span><strong th:text="${s.fullName}">Nguyễn Minh Anh</strong></div></td>
+              <td class="numeric" th:text="${s.gpa != null ? #numbers.formatDecimal(s.gpa,1,2) : '—'}">2.30</td>
+              <td class="numeric" th:text="${s.previousGpa != null ? #numbers.formatDecimal(s.previousGpa,1,2) : '—'}">2.60</td>
+              <td class="numeric" th:text="${s.currentGpa != null ? #numbers.formatDecimal(s.currentGpa,1,2) : '—'}">1.95</td>
+              <td class="numeric" th:text="${s.failedCourses != null ? s.failedCourses : '—'}">2</td>
+              <td class="numeric" th:text="${s.creditCompletionRate != null ? s.creditCompletionRate + '%' : '—'}">70%</td>
+              <td class="numeric" th:text="${s.attendanceRate != null ? s.attendanceRate + '%' : '—'}">68%</td>
+              <td><div class="table-actions">
+                <a class="action-link" href="student-form.html" th:href="@{/students/edit/{id}(id=${s.studentId})}">Sửa</a>
+                <form class="inline-form delete-form" method="post" action="#" th:action="@{/students/delete/{id}(id=${s.studentId})}" data-confirm-delete>
+                  <button type="submit" class="action-link action-danger" th:attr="data-student-name=${s.fullName}">Xóa</button>
+                </form>
+                <a class="action-link action-assess" href="assessment.html" th:remove="all">Đánh giá</a>
+                <span class="action-link action-disabled" title="Chờ RiskController" style="display:none" th:style="'display:inline-flex'">Đánh giá</span>
+              </div></td>
+            </tr>
+            <!-- Hai dòng dữ liệu mẫu chỉ hiển thị khi mở HTML trực tiếp. -->
+            <tr data-student-row th:remove="all">
+              <td><span class="student-id">SV2026002</span></td>
+              <td><div class="student-person"><span class="avatar-initial avatar-alt" aria-hidden="true">SV</span><strong>Trần Quốc Bảo</strong></div></td>
+              <td class="numeric">3.20</td><td class="numeric">3.10</td><td class="numeric">3.40</td><td class="numeric">0</td><td class="numeric">91%</td><td class="numeric">95%</td>
+              <td><div class="table-actions"><a class="action-link" href="student-form.html">Sửa</a><form class="inline-form delete-form" method="post" action="#" data-confirm-delete><button type="submit" class="action-link action-danger" data-student-name="Trần Quốc Bảo">Xóa</button></form><a class="action-link action-assess" href="assessment.html">Đánh giá</a></div></td>
+            </tr>
+            <tr data-student-row th:remove="all">
+              <td><span class="student-id">SV2026003</span></td>
+              <td><div class="student-person"><span class="avatar-initial avatar-violet" aria-hidden="true">SV</span><strong>Lê Ngọc Hà</strong></div></td>
+              <td class="numeric">2.75</td><td class="numeric">2.80</td><td class="numeric">2.70</td><td class="numeric">1</td><td class="numeric">84%</td><td class="numeric">86%</td>
+              <td><div class="table-actions"><a class="action-link" href="student-form.html">Sửa</a><form class="inline-form delete-form" method="post" action="#" data-confirm-delete><button type="submit" class="action-link action-danger" data-student-name="Lê Ngọc Hà">Xóa</button></form><a class="action-link action-assess" href="assessment.html">Đánh giá</a></div></td>
+            </tr>
+            <tr class="empty-row" id="serverEmptyRow" th:if="${students == null or #lists.isEmpty(students)}" style="display:none" th:style="'display:table-row'">
+              <td colspan="9"><div class="empty-state"><span class="empty-icon" aria-hidden="true">∅</span><strong th:text="${keyword != null and !#strings.isEmpty(keyword)} ? 'Không tìm thấy sinh viên phù hợp' : 'Chưa có sinh viên nào'">Chưa có sinh viên nào</strong><p th:text="${keyword != null and !#strings.isEmpty(keyword)} ? 'Thử từ khóa tìm kiếm khác.' : 'Hãy thêm sinh viên để bắt đầu quản lý hồ sơ.'">Hãy thêm sinh viên để bắt đầu quản lý hồ sơ.</p><a class="text-link" href="student-form.html" th:href="@{/students/new}" th:if="${keyword == null or #strings.isEmpty(keyword)}">Thêm sinh viên đầu tiên</a></div></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="panel-footer"><span>DropSense <span class="footer-separator">/</span> Quản lý hồ sơ</span><span>Các thao tác Thêm, Sửa, Xóa dùng Controller hiện có</span></div>
+    </section>
+  </main>
+  <footer class="site-footer"><div class="container"><span>© 2026 DropSense · Trương Hoàng Vũ &amp; Võ Nguyễn Vinh Toàn</span><span>Đồ án môn học – Công nghệ phần mềm</span></div></footer>
+</body>
+</html>

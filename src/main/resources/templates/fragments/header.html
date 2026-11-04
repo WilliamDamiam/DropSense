@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<body>
+  <!-- Gọi bằng: th:replace="~{fragments/header :: siteHeader('students')}" -->
+  <header class="topbar" th:fragment="siteHeader(activePage)">
+    <div class="container nav-inner">
+      <a class="brand" href="../students.html" th:href="@{/students}" aria-label="DropSense - Danh sách sinh viên">
+        <span class="brand-mark">D<span class="brand-mark-dot">.</span></span>
+        <span class="brand-copy">
+          <strong>DropSense</strong>
+          <small>Student Risk Management</small>
+        </span>
+      </a>
+      <nav class="nav-links" th:replace="~{fragments/navbar :: mainNav(${activePage})}" aria-label="Điều hướng chính">
+        <a class="nav-link" href="../students.html">Sinh viên</a>
+        <a class="nav-link" href="../student-form.html">Thêm mới</a>
+      </nav>
+    </div>
+  </header>
+</body>
+</html>
