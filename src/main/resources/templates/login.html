@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f5f7fb">
+    <title>Đăng nhập | DropSense</title>
+
+    <!-- Favicon DropSense -->
+    <link rel="icon"
+          type="image/x-icon"
+          th:href="@{/favicon.ico(v=2)}"
+          href="/favicon.ico?v=2">
+
+
+    <!-- Khởi tạo CSRF token sớm, tránh lỗi tạo session khi render form ở cuối trang -->
+    <meta name="_csrf" th:content="${_csrf.token}">
+
+    <!-- Bootstrap 5 và Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        :root
+        {
+            --blue: #175cd3;
+            --blue-dark: #124bad;
+            --ink: #17243c;
+            --muted: #68788f;
+            --line: #dce3ee;
+        }
+
+        body
+        {
+            min-height: 100vh;
+            margin: 0;
+            background: #f4f7fb;
+            color: var(--ink);
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
+        /* Khung đăng nhập: vừa màn hình laptop thông dụng */
+        .page-wrapper
+        {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px 24px;
+        }
+
+        .login-layout
+        {
+            display: grid;
+            grid-template-columns: 52% 48%;
+            width: 100%;
+            max-width: 1360px;
+            min-height: 640px;
+            height: auto;
+            background: white;
+            border: 1px solid #e7ecf4;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 18px 55px rgba(27, 49, 83, 0.08);
+        }
+
+        /* Cột trái */
+        .brand-panel
+        {
+            display: flex;
+            flex-direction: column;
+            padding: 34px 42px 0;
+            background: linear-gradient(145deg, #ffffff 10%, #edf4ff 100%);
+            overflow: hidden;
+        }
+
+        .brand-logo
+        {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 25px;
+            font-weight: 800;
+            letter-spacing: -0.7px;
+        }
+
+        .brand-icon
+        {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 46px;
+            height: 46px;
+            border-radius: 12px;
+            background: var(--blue);
+            color: white;
+            font-size: 22px;
+        }
+
+        .brand-content
+        {
+            margin-top: 28px;
+        }
+
+        .brand-label
+        {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--blue);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1.3px;
+            text-transform: uppercase;
+        }
+
+        .brand-title
+        {
+            margin: 14px 0 0;
+            font-size: clamp(32px, 3vw, 46px);
+            font-weight: 800;
+            line-height: 1.17;
+            letter-spacing: -1.2px;
+        }
+
+        .brand-title span
+        {
+            color: var(--blue);
+        }
+
+        .brand-description
+        {
+            max-width: 500px;
+            margin: 15px 0 12px;
+            color: var(--muted);
+            font-size: 15px;
+            line-height: 1.65;
+        }
+
+        .brand-image
+        {
+            display: block;
+            align-self: center;
+            width: min(100%, 630px);
+            max-height: 275px;
+            height: auto;
+            margin-top: auto;
+            object-fit: contain;
+        }
+
+        /* Cột phải: form luôn nằm trong vùng nhìn thấy */
+        .form-panel
+        {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 54px 44px 36px;
+            border-left: 1px solid #e7ecf4;
+        }
+
+        .login-form
+        {
+            width: 100%;
+            max-width: 440px;
+        }
+
+        .form-kicker
+        {
+            margin-bottom: 8px;
+            color: var(--blue);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+        }
+
+        .form-title
+        {
+            margin-bottom: 8px;
+            color: var(--ink);
+            font-size: clamp(25px, 2.2vw, 29px);
+            font-weight: 800;
+            letter-spacing: -0.7px;
+        }
+
+        .form-description
+        {
+            margin-bottom: 18px;
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .form-label
+        {
+            margin-bottom: 7px;
+            color: #334155;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .input-box
+        {
+            position: relative;
+        }
+
+        .input-box .input-icon
+        {
+            position: absolute;
+            top: 50%;
+            left: 16px;
+            transform: translateY(-50%);
+            color: #8090a4;
+            font-size: 18px;
+            pointer-events: none;
+        }
+
+        .input-box .form-control
+        {
+            height: 50px;
+            padding: 0 48px;
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            background: white;
+            color: var(--ink);
+            font-size: 14px;
+        }
+
+        .input-box .form-control::placeholder
+        {
+            color: #95a2b3;
+        }
+
+        .input-box .form-control:focus
+        {
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3px rgba(23, 92, 211, 0.10);
+        }
+
+        .password-toggle
+        {
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            width: 36px;
+            height: 36px;
+            border: 0;
+            border-radius: 8px;
+            background: transparent;
+            color: #8090a4;
+            font-size: 18px;
+        }
+
+        .password-toggle:hover,
+        .password-toggle:focus-visible
+        {
+            background: #eff4fb;
+            color: var(--blue);
+        }
+
+        .auth-link
+        {
+            color: var(--blue);
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .auth-link:hover
+        {
+            color: var(--blue-dark);
+            text-decoration: underline;
+        }
+
+        .btn-login
+        {
+            height: 50px;
+            border: 1px solid var(--blue);
+            border-radius: 10px;
+            background: var(--blue);
+            color: white;
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .btn-login:hover,
+        .btn-login:focus-visible
+        {
+            border-color: var(--blue-dark);
+            background: var(--blue-dark);
+            color: white;
+        }
+
+        .btn-register
+        {
+            height: 48px;
+            border: 1px solid var(--blue);
+            border-radius: 10px;
+            background: white;
+            color: var(--blue);
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .btn-register:hover,
+        .btn-register:focus-visible
+        {
+            background: #eff5ff;
+            color: var(--blue-dark);
+        }
+
+        .divider
+        {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin: 15px 0;
+            color: #8b99ab;
+            font-size: 13px;
+        }
+
+        .divider::before,
+        .divider::after
+        {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: #e2e8f0;
+        }
+
+        .form-footer
+        {
+            margin: 20px 0 0;
+            color: #8b99ab;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        .alert
+        {
+            padding: 10px 13px;
+            margin-bottom: 12px;
+            border-radius: 9px;
+            font-size: 13px;
+        }
+
+        /* Máy tính bảng */
+        @media (max-width: 1050px)
+        {
+            .login-layout
+            {
+                grid-template-columns: 48% 52%;
+            }
+
+            .brand-panel
+            {
+                padding: 30px 28px 0;
+            }
+
+            .brand-title
+            {
+                font-size: 35px;
+            }
+
+            .brand-image
+            {
+                max-height: 240px;
+            }
+
+            .form-panel
+            {
+                padding: 42px 30px 30px;
+            }
+        }
+
+        /* Màn hình thấp: cuộn bình thường thay vì cắt mất form */
+        @media (max-height: 690px) and (min-width: 768px)
+        {
+            .page-wrapper
+            {
+                align-items: flex-start;
+            }
+
+            .login-layout
+            {
+                height: auto;
+                min-height: 590px;
+            }
+
+            .brand-image
+            {
+                max-height: 220px;
+            }
+        }
+
+        /* Điện thoại: đưa form lên gần đầu trang, ẩn ảnh lớn */
+        @media (max-width: 767px)
+        {
+            .page-wrapper
+            {
+                padding: 12px;
+            }
+
+            .login-layout
+            {
+                display: block;
+                height: auto;
+                min-height: 0;
+                border-radius: 16px;
+            }
+
+            .brand-panel
+            {
+                padding: 22px 24px;
+            }
+
+            .brand-logo
+            {
+                font-size: 21px;
+            }
+
+            .brand-content
+            {
+                margin-top: 16px;
+            }
+
+            .brand-title
+            {
+                margin-top: 10px;
+                font-size: 28px;
+                letter-spacing: -0.7px;
+            }
+
+            .brand-description
+            {
+                margin: 10px 0 0;
+                font-size: 13px;
+            }
+
+            .brand-image
+            {
+                display: none;
+            }
+
+            .form-panel
+            {
+                padding: 28px 24px;
+                border-left: 0;
+                border-top: 1px solid #e7ecf4;
+            }
+
+            .form-title
+            {
+                font-size: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<main class="page-wrapper">
+    <div class="login-layout">
+
+        <!-- CỘT TRÁI: THƯƠNG HIỆU -->
+        <section class="brand-panel" aria-label="Giới thiệu DropSense">
+
+            <div class="brand-logo">
+                <div class="brand-icon">
+                    <i class="bi bi-mortarboard-fill"></i>
+                </div>
+                <span>DropSense</span>
+            </div>
+
+            <div class="brand-content">
+                <span class="brand-label">
+                    <i class="bi bi-graph-up-arrow"></i>
+                    Student Success Platform
+                </span>
+
+                <h1 class="brand-title">
+                    Theo dõi sớm.<br>
+                    Hỗ trợ <span>đúng lúc.</span>
+                </h1>
+
+                <p class="brand-description">
+                    Nền tảng hỗ trợ đánh giá nguy cơ bỏ học từ dữ liệu học tập,
+                    giúp nhận diện sớm những sinh viên cần được quan tâm và hỗ trợ.
+                </p>
+            </div>
+
+            <!-- Ảnh đã tạo riêng, đặt trong static/images -->
+            <img class="brand-image"
+                 th:src="@{/images/dropsense-login-hero.png}"
+                 src="/images/dropsense-login-hero.png"
+                 alt="Hai sinh viên học tập cùng biểu đồ phân tích"
+                 width="740" height="508">
+        </section>
+
+        <!-- CỘT PHẢI: ĐĂNG NHẬP -->
+        <section class="form-panel" aria-label="Đăng nhập DropSense">
+            <div class="login-form">
+
+                <div class="form-kicker">WELCOME BACK</div>
+                <h2 class="form-title">Đăng nhập vào DropSense</h2>
+                <p class="form-description">
+                    Nhập thông tin tài khoản của bạn để tiếp tục.
+                </p>
+
+                <!-- Các thông báo từ Spring Security -->
+                <div class="alert alert-success" role="status" th:if="${param.registered != null}">
+                    <i class="bi bi-check-circle me-1"></i>
+                    Đăng ký thành công. Vui lòng đăng nhập.
+                </div>
+
+                <div class="alert alert-success" role="status" th:if="${param.resetSuccess != null}">
+                    <i class="bi bi-check-circle me-1"></i>
+                    Đặt lại mật khẩu thành công. Hãy đăng nhập bằng mật khẩu mới.
+                </div>
+
+                <div class="alert alert-danger" role="alert" th:if="${param.error != null}">
+                    <i class="bi bi-exclamation-circle me-1"></i>
+                    Tên đăng nhập hoặc mật khẩu không chính xác.
+                </div>
+
+                <div class="alert alert-info" role="status" th:if="${param.logout != null}">
+                    <i class="bi bi-check-circle me-1"></i>
+                    Bạn đã đăng xuất thành công.
+                    <div class="mt-2">
+                        <a class="auth-link" th:href="@{/login}">Quay về trang đăng nhập</a>
+                    </div>
+                </div>
+
+                <!-- Form dùng Spring Security, không đổi tên các trường -->
+                <form th:action="@{/login}" action="/login" method="post">
+
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Tên đăng nhập</label>
+                        <div class="input-box">
+                            <i class="bi bi-person input-icon" aria-hidden="true"></i>
+                            <input type="text" id="username" name="username"
+                                   class="form-control" placeholder="Nhập tên đăng nhập"
+                                   autocomplete="username" maxlength="30" required autofocus>
+                        </div>
+                    </div>
+
+                    <div class="mb-2">
+                        <label for="password" class="form-label">Mật khẩu</label>
+                        <div class="input-box">
+                            <i class="bi bi-lock input-icon" aria-hidden="true"></i>
+                            <input type="password" id="password" name="password"
+                                   class="form-control" placeholder="Nhập mật khẩu"
+                                   autocomplete="current-password" required>
+
+                            <button type="button" class="password-toggle"
+                                    onclick="hienMatKhau()" aria-label="Hiện mật khẩu"
+                                    aria-pressed="false" id="togglePassword">
+                                <i class="bi bi-eye" id="eyeIcon" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="text-end mb-4">
+                        <a class="auth-link" th:href="@{/forgot-password}" href="/forgot-password">
+                            Quên mật khẩu?
+                        </a>
+                    </div>
+
+                    <button type="submit" class="btn btn-login w-100">
+                        Đăng nhập <i class="bi bi-arrow-right ms-1" aria-hidden="true"></i>
+                    </button>
+                </form>
+
+                <div class="divider">hoặc</div>
+
+                <a class="btn btn-register w-100 d-flex align-items-center justify-content-center"
+                   th:href="@{/register}" href="/register">
+                    Tạo tài khoản mới
+                </a>
+
+                <p class="form-footer">© 2026 DropSense · Nhóm 2A</p>
+            </div>
+        </section>
+
+    </div>
+</main>
+
+<!-- JavaScript thuần, dễ học -->
+<script>
+    function hienMatKhau()
+    {
+        var password = document.getElementById("password");
+        var eyeIcon = document.getElementById("eyeIcon");
+        var button = document.getElementById("togglePassword");
+
+        if (password.type == "password")
+        {
+            password.type = "text";
+            eyeIcon.className = "bi bi-eye-slash";
+            button.setAttribute("aria-label", "Ẩn mật khẩu");
+            button.setAttribute("aria-pressed", "true");
+        }
+        else
+        {
+            password.type = "password";
+            eyeIcon.className = "bi bi-eye";
+            button.setAttribute("aria-label", "Hiện mật khẩu");
+            button.setAttribute("aria-pressed", "false");
+        }
+    }
+</script>
+
+</body>
+</html>

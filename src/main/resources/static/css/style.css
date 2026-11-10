@@ -1,0 +1,356 @@
+
+/* ============================= */
+/* 1. CẤU HÌNH CHUNG              */
+/* ============================= */
+
+body
+{
+    background-color: #f4f6f9;
+    font-family: Arial, sans-serif;
+    color: #212529;
+    font-size: 15px;
+}
+
+h1, h2, h3, h4, h5, h6
+{
+    color: #1e293b;
+}
+
+a
+{
+    text-decoration: none;
+}
+
+/* ============================= */
+/* 2. THANH ĐIỀU HƯỚNG           */
+/* ============================= */
+
+.navbar
+{
+    background-color: #1e3a8a;
+    padding-top: 14px;
+    padding-bottom: 14px;
+}
+
+.navbar-brand
+{
+    font-size: 23px;
+    font-weight: bold;
+}
+
+.navbar .nav-link
+{
+    color: #dbeafe;
+    margin-left: 10px;
+    transition: color 0.2s;
+}
+
+.navbar .nav-link:hover
+{
+    color: white;
+}
+
+.navbar .nav-link.active
+{
+    color: white;
+    font-weight: bold;
+}
+
+/* ============================= */
+/* 3. CARD                       */
+/* ============================= */
+
+.card
+{
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.card-header
+{
+    background-color: white;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.card-body
+{
+    line-height: 1.6;
+}
+
+.shadow-sm
+{
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* ============================= */
+/* 4. NÚT BẤM                    */
+/* ============================= */
+
+.btn
+{
+    border-radius: 7px;
+    font-weight: 500;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.btn-primary
+{
+    background-color: #2563eb;
+    border-color: #2563eb;
+}
+
+.btn-primary:hover
+{
+    background-color: #1d4ed8;
+    border-color: #1d4ed8;
+}
+
+.btn-outline-primary
+{
+    color: #2563eb;
+    border-color: #2563eb;
+}
+
+.btn-outline-primary:hover
+{
+    background-color: #2563eb;
+    border-color: #2563eb;
+    color: white;
+}
+
+/* ============================= */
+/* 5. FORM NHẬP LIỆU             */
+/* ============================= */
+
+.form-label
+{
+    color: #374151;
+    font-weight: 500;
+}
+
+.form-control,
+.form-select
+{
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    padding: 10px 12px;
+}
+
+.form-control:focus,
+.form-select:focus
+{
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.form-control[readonly]
+{
+    background-color: #f3f4f6;
+}
+
+/* ============================= */
+/* 6. BẢNG DỮ LIỆU               */
+/* ============================= */
+
+.table
+{
+    font-size: 14px;
+    margin-bottom: 0;
+}
+
+.table thead th
+{
+    background-color: #eff3f9;
+    color: #334155;
+    font-weight: 600;
+    white-space: nowrap;
+    padding: 13px 12px;
+}
+
+.table tbody td
+{
+    padding: 12px;
+    vertical-align: middle;
+}
+
+.table-hover tbody tr:hover td
+{
+    background-color: #f8faff;
+}
+
+.table .btn-sm
+{
+    white-space: nowrap;
+}
+
+/* ============================= */
+/* 7. THÔNG BÁO                  */
+/* ============================= */
+
+.alert
+{
+    border-radius: 9px;
+    padding: 14px 18px;
+}
+
+.badge
+{
+    font-weight: 500;
+    padding: 7px 10px;
+    border-radius: 6px;
+}
+
+/* ============================= */
+/* 8. KẾT QUẢ ĐÁNH GIÁ           */
+/* ============================= */
+
+.progress
+{
+    background-color: #e5e7eb;
+    border-radius: 10px;
+}
+
+.progress-bar
+{
+    transition: width 0.3s ease;
+}
+
+.text-danger
+{
+    color: #dc3545 !important;
+}
+
+.text-success
+{
+    color: #198754 !important;
+}
+
+.text-warning
+{
+    color: #d97706 !important;
+}
+
+/* Hiển thị xuống dòng cho nguyên nhân và khuyến nghị */
+.risk-description
+{
+    white-space: pre-line;
+    line-height: 1.8;
+}
+
+/* ============================= */
+/* 9. CHÂN TRANG                 */
+/* ============================= */
+
+.footer
+{
+    text-align: center;
+    color: #6b7280;
+    font-size: 13px;
+    padding: 20px 0;
+}
+
+/* ============================= */
+/* 10. GIAO DIỆN ĐIỆN THOẠI      */
+/* ============================= */
+
+@media (max-width: 768px)
+{
+    body
+    {
+        font-size: 14px;
+    }
+
+    .navbar .nav-link
+    {
+        margin-left: 0;
+        padding: 10px 0;
+    }
+
+    .card-body
+    {
+        padding: 18px;
+    }
+
+    .table
+    {
+        font-size: 13px;
+    }
+
+    .table thead th,
+    .table tbody td
+    {
+        padding: 10px;
+    }
+
+    h3
+    {
+        font-size: 23px;
+    }
+}
+
+/* ============================= */
+/* AVATAR NGƯỜI DÙNG             */
+/* ============================= */
+
+.avatar-button
+{
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: 2px solid white;
+    background-color: #2563eb;
+    color: white;
+    font-weight: bold;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.2s;
+}
+
+.avatar-button:hover
+{
+    background-color: #1d4ed8;
+    transform: scale(1.05);
+}
+
+.avatar-button::after
+{
+    display: none;
+}
+
+/* Menu tài khoản */
+.navbar .dropdown-menu
+{
+    border: none;
+    border-radius: 12px;
+    min-width: 220px;
+    padding: 8px;
+}
+
+.navbar .dropdown-item
+{
+    border-radius: 7px;
+    padding: 10px 12px;
+}
+
+.navbar .dropdown-item:hover
+{
+    background-color: #eff6ff;
+}
+
+/* Avatar lớn trên trang cá nhân */
+.profile-avatar
+{
+    width: 95px;
+    height: 95px;
+    border-radius: 50%;
+    background-color: #2563eb;
+    color: white;
+    font-size: 42px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

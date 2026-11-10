@@ -1,0 +1,256 @@
+
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Kết quả đánh giá - DropSense</title>
+
+    <!-- Favicon DropSense -->
+    <link rel="icon"
+          type="image/x-icon"
+          th:href="@{/favicon.ico(v=2)}">
+
+
+    <th:block th:replace="~{fragments/header :: commonHeader}"></th:block>
+</head>
+
+<body class="bg-light">
+
+<!-- Thanh điều hướng -->
+<div th:replace="~{fragments/navbar :: mainNavbar}"></div>
+
+<main class="container py-4">
+
+    <!-- Tiêu đề -->
+    <div class="mb-4">
+        <h3 class="fw-bold text-primary">
+            <i class="bi bi-clipboard-check me-2"></i>
+            Kết quả đánh giá nguy cơ
+        </h3>
+
+        <p class="text-secondary">
+            Kết quả phân tích các chỉ số học tập của sinh viên.
+        </p>
+    </div>
+
+    <div class="row g-4">
+
+        <!-- THÔNG TIN SINH VIÊN -->
+        <div class="col-lg-5">
+
+            <div class="card border-0 shadow-sm mb-4">
+
+                <div class="card-header bg-white py-3">
+                    <h5 class="fw-bold mb-0">
+                        <i class="bi bi-person-vcard me-2"></i>
+                        Thông tin sinh viên
+                    </h5>
+                </div>
+
+                <div class="card-body">
+
+                    <p>
+                        <strong>Mã sinh viên:</strong>
+                        <span th:text="${student.studentId}"></span>
+                    </p>
+
+                    <p>
+                        <strong>Họ và tên:</strong>
+                        <span th:text="${student.fullName}"></span>
+                    </p>
+
+                    <p>
+                        <strong>GPA tích lũy:</strong>
+                        <span th:text="${student.gpa}"></span>
+                    </p>
+
+                    <p>
+                        <strong>GPA học kỳ trước:</strong>
+                        <span th:text="${student.previousGpa}"></span>
+                    </p>
+
+                    <p>
+                        <strong>GPA học kỳ hiện tại:</strong>
+                        <span th:text="${student.currentGpa}"></span>
+                    </p>
+
+                    <p>
+                        <strong>Số học phần trượt:</strong>
+                        <span th:text="${student.failedCourses}"></span>
+                    </p>
+
+                    <p>
+                        <strong>Hoàn thành tín chỉ:</strong>
+                        <span th:text="${student.creditCompletionRate + '%'}"></span>
+                    </p>
+
+                    <p class="mb-0">
+                        <strong>Chuyên cần:</strong>
+                        <span th:text="${student.attendanceRate + '%'}"></span>
+                    </p>
+
+                </div>
+            </div>
+
+            <!-- Thông tin lần đánh giá -->
+            <div class="card border-0 shadow-sm">
+
+                <div class="card-body">
+
+                    <h5 class="fw-bold mb-3">
+                        <i class="bi bi-clock-history text-primary me-2"></i>
+                        Thông tin đánh giá
+                    </h5>
+
+                    <p>
+                        <strong>Mã đánh giá:</strong>
+                        <span th:text="${assessment.assessmentId}"></span>
+                    </p>
+
+                    <p class="mb-0">
+                        <strong>Thời gian:</strong>
+
+                        <span th:text="${#temporals.format(assessment.assessedAt, 'dd/MM/yyyy HH:mm')}"></span>
+                    </p>
+
+                </div>
+            </div>
+
+        </div>
+
+        <!-- KẾT QUẢ ĐÁNH GIÁ -->
+        <div class="col-lg-7">
+
+            <div class="card border-0 shadow-sm mb-4">
+
+                <div class="card-body p-4 text-center">
+
+                    <h5 class="fw-bold mb-3">
+                        Mức độ nguy cơ bỏ học
+                    </h5>
+
+                    <!-- Điểm nguy cơ -->
+                    <h1 class="display-3 fw-bold"
+                        th:classappend="${riskResult.riskLevel.name() == 'HIGH' ? 'text-danger' : (riskResult.riskLevel.name() == 'MEDIUM' ? 'text-warning' : 'text-success')}"
+                        th:text="${riskResult.riskScore + '/100'}">
+                        0/100
+                    </h1>
+
+                    <!-- Thanh tiến độ -->
+                    <div class="progress my-4" style="height: 18px;">
+
+                        <div class="progress-bar"
+                             th:classappend="${riskResult.riskLevel.name() == 'HIGH' ? 'bg-danger' : (riskResult.riskLevel.name() == 'MEDIUM' ? 'bg-warning' : 'bg-success')}"
+                             th:style="|width: ${riskResult.riskScore}%|">
+                        </div>
+
+                    </div>
+
+                    <!-- Phân loại nguy cơ -->
+                    <span class="badge fs-6 px-4 py-2"
+                          th:classappend="${riskResult.riskLevel.name() == 'HIGH' ? 'bg-danger' : (riskResult.riskLevel.name() == 'MEDIUM' ? 'bg-warning text-dark' : 'bg-success')}"
+                          th:text="${riskResult.riskLevel.displayName}">
+                        Thấp
+                    </span>
+
+                    <p class="text-secondary mt-3 mb-0">
+                        Điểm nguy cơ được tính từ các chỉ số học tập
+                        theo bộ quy tắc của DropSense.
+                    </p>
+
+                </div>
+            </div>
+
+            <!-- Nguyên nhân cảnh báo -->
+            <div class="card border-0 shadow-sm mb-4">
+
+                <div class="card-header bg-white py-3">
+
+                    <h5 class="fw-bold mb-0">
+                        <i class="bi bi-exclamation-triangle text-warning me-2"></i>
+                        Nguyên nhân đánh giá
+                    </h5>
+
+                </div>
+
+                <div class="card-body">
+
+                    <div style="white-space: pre-line;"
+                         th:text="${riskResult.reasons}">
+                        Chưa có nguyên nhân.
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Khuyến nghị -->
+            <div class="card border-0 shadow-sm">
+
+                <div class="card-header bg-white py-3">
+
+                    <h5 class="fw-bold mb-0">
+                        <i class="bi bi-lightbulb text-primary me-2"></i>
+                        Khuyến nghị hỗ trợ
+                    </h5>
+
+                </div>
+
+                <div class="card-body">
+
+                    <div style="white-space: pre-line;"
+                         th:text="${riskResult.recommendations}">
+                        Chưa có khuyến nghị.
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Các nút điều hướng -->
+    <div class="d-flex gap-2 flex-wrap mt-4">
+
+        <a th:href="@{/assessments}"
+           class="btn btn-primary">
+
+            <i class="bi bi-arrow-repeat me-1"></i>
+            Đánh giá sinh viên khác
+        </a>
+
+        <a th:href="@{/assessments/history/{id}(id=${student.studentId})}"
+           class="btn btn-outline-primary">
+
+            <i class="bi bi-clock-history me-1"></i>
+            Lịch sử sinh viên
+        </a>
+
+        <a th:href="@{/students}"
+           class="btn btn-outline-secondary">
+
+            <i class="bi bi-arrow-left me-1"></i>
+            Danh sách sinh viên
+        </a>
+
+    </div>
+
+    <!-- Ghi chú -->
+    <div class="alert alert-info mt-4">
+
+        <i class="bi bi-info-circle me-2"></i>
+
+        Kết quả đánh giá chỉ mang tính chất cảnh báo tham khảo,
+        không khẳng định sinh viên chắc chắn sẽ bỏ học.
+
+    </div>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

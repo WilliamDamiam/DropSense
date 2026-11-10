@@ -1,0 +1,237 @@
+
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Thông tin sinh viên - DropSense</title>
+
+    <!-- Favicon DropSense -->
+    <link rel="icon"
+          type="image/x-icon"
+          th:href="@{/favicon.ico(v=2)}">
+
+
+    <!-- Bootstrap 5 và CSS dùng chung -->
+    <th:block th:replace="~{fragments/header :: commonHeader}"></th:block>
+</head>
+
+<body class="bg-light">
+
+<!-- Thanh điều hướng -->
+<div th:replace="~{fragments/navbar :: mainNavbar}"></div>
+
+<main class="container py-4">
+
+    <!-- Tiêu đề -->
+    <div class="mb-4">
+        <h3 class="fw-bold text-primary"
+            th:text="${isEdit} ? 'Cập nhật sinh viên' : 'Thêm sinh viên'">
+            Thông tin sinh viên
+        </h3>
+
+        <p class="text-secondary">
+            Nhập đầy đủ thông tin và các chỉ số học tập của sinh viên.
+        </p>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+
+        <div class="card-header bg-white py-3">
+            <h5 class="fw-bold mb-0">
+                <i class="bi bi-person-vcard me-2"></i>
+                Thông tin sinh viên
+            </h5>
+        </div>
+
+        <div class="card-body p-4">
+
+            <!-- Thông báo lỗi từ StudentController -->
+            <div class="alert alert-danger"
+                 th:if="${error != null}">
+
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                <span th:text="${error}"></span>
+            </div>
+
+            <!-- Form dùng chung cho thêm và sửa -->
+            <form th:action="${formAction}"
+                  th:object="${student}"
+                  method="post">
+
+                <div class="row g-3">
+
+                    <!-- Mã sinh viên -->
+                    <div class="col-md-6">
+                        <label for="studentId" class="form-label fw-semibold">
+                            Mã sinh viên <span class="text-danger">*</span>
+                        </label>
+
+                        <input type="text"
+                               id="studentId"
+                               th:field="*{studentId}"
+                               th:readonly="${isEdit}"
+                               class="form-control"
+                               placeholder="Nhập mã sinh viên"
+                               maxlength="20"
+                               required>
+
+                        <small class="text-secondary" th:if="${isEdit}">
+                            Không thể thay đổi mã sinh viên khi cập nhật.
+                        </small>
+                    </div>
+
+                    <!-- Họ và tên -->
+                    <div class="col-md-6">
+                        <label for="fullName" class="form-label fw-semibold">
+                            Họ và tên <span class="text-danger">*</span>
+                        </label>
+
+                        <input type="text"
+                               id="fullName"
+                               th:field="*{fullName}"
+                               class="form-control"
+                               placeholder="Nhập họ và tên"
+                               maxlength="100"
+                               required>
+                    </div>
+
+                    <!-- GPA tích lũy -->
+                    <div class="col-md-4">
+                        <label for="gpa" class="form-label fw-semibold">
+                            GPA tích lũy
+                        </label>
+
+                        <input type="number"
+                               id="gpa"
+                               th:field="*{gpa}"
+                               class="form-control"
+                               min="0"
+                               max="4"
+                               step="0.01"
+                               required>
+                    </div>
+
+                    <!-- GPA học kỳ trước -->
+                    <div class="col-md-4">
+                        <label for="previousGpa" class="form-label fw-semibold">
+                            GPA học kỳ trước
+                        </label>
+
+                        <input type="number"
+                               id="previousGpa"
+                               th:field="*{previousGpa}"
+                               class="form-control"
+                               min="0"
+                               max="4"
+                               step="0.01"
+                               required>
+                    </div>
+
+                    <!-- GPA học kỳ hiện tại -->
+                    <div class="col-md-4">
+                        <label for="currentGpa" class="form-label fw-semibold">
+                            GPA học kỳ hiện tại
+                        </label>
+
+                        <input type="number"
+                               id="currentGpa"
+                               th:field="*{currentGpa}"
+                               class="form-control"
+                               min="0"
+                               max="4"
+                               step="0.01"
+                               required>
+                    </div>
+
+                    <!-- Số môn trượt -->
+                    <div class="col-md-4">
+                        <label for="failedCourses" class="form-label fw-semibold">
+                            Số học phần trượt
+                        </label>
+
+                        <input type="number"
+                               id="failedCourses"
+                               th:field="*{failedCourses}"
+                               class="form-control"
+                               min="0"
+                               step="1"
+                               required>
+                    </div>
+
+                    <!-- Tỷ lệ hoàn thành tín chỉ -->
+                    <div class="col-md-4">
+                        <label for="creditCompletionRate" class="form-label fw-semibold">
+                            Hoàn thành tín chỉ (%)
+                        </label>
+
+                        <input type="number"
+                               id="creditCompletionRate"
+                               th:field="*{creditCompletionRate}"
+                               class="form-control"
+                               min="0"
+                               max="100"
+                               step="0.01"
+                               required>
+                    </div>
+
+                    <!-- Tỷ lệ chuyên cần -->
+                    <div class="col-md-4">
+                        <label for="attendanceRate" class="form-label fw-semibold">
+                            Tỷ lệ chuyên cần (%)
+                        </label>
+
+                        <input type="number"
+                               id="attendanceRate"
+                               th:field="*{attendanceRate}"
+                               class="form-control"
+                               min="0"
+                               max="100"
+                               step="0.01"
+                               required>
+                    </div>
+
+                </div>
+
+                <hr class="my-4">
+
+                <!-- Nút lưu và hủy -->
+                <div class="d-flex gap-2">
+
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-floppy me-1"></i>
+
+                        <span th:text="${isEdit} ? 'Cập nhật' : 'Thêm sinh viên'">
+                            Lưu
+                        </span>
+                    </button>
+
+                    <a th:href="@{/students}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left me-1"></i>
+                        Quay lại
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    <!-- Hướng dẫn -->
+    <div class="alert alert-info mt-4">
+        <i class="bi bi-info-circle me-2"></i>
+        GPA được tính theo thang điểm 4.
+        Tỷ lệ chuyên cần và hoàn thành tín chỉ nằm trong khoảng 0% đến 100%.
+    </div>
+
+</main>
+
+<!-- Bootstrap JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
