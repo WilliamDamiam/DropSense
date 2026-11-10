@@ -1,79 +1,108 @@
 package com.dropsense.DropsenseProject.service;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
 
-@Service
-public class EmailService
-{
-    @Value("${resend.api-key:}")
-    private String resendApiKey;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+import java.util.Map;
 
-    @Value("${resend.from-email:onboarding@resend.dev}")
+@Service
+public class EmailService {
+
+    @Value("${gmail.client-id:}")
+    private String clientId;
+
+    @Value("${gmail.client-secret:}")
+    private String clientSecret;
+
+    @Value("${gmail.refresh-token:}")
+    private String refreshToken;
+
+    @Value("${gmail.from-email:}")
     private String fromEmail;
 
     @Value("${dropsense.app-url:http://localhost:8080}")
     private String appUrl;
 
-    private final RestClient restClient = RestClient.builder()
-            .baseUrl("https://api.resend.com")
-            .build();
+    private final RestClient restClient = RestClient.create();
 
-    // Giữ nguyên tên hàm và tham số để ForgotPasswordController không cần sửa.
-    public void sendPasswordResetEmail(String toEmail, String token)
-    {
-        if (resendApiKey == null || resendApiKey.isBlank())
-        {
-            throw new IllegalStateException("Chua cau hinh RESEND_API_KEY");
+    // 1. Gửi email khôi phục mật khẩu
+    public void sendPasswordResetEmail(String toEmail, String token) {
+
+        // Kiểm tra cấu hình Gmail API
+        if (clientId.isBlank() || clientSecret.isBlank()
+                || refreshToken.isBlank() || fromEmail.isBlank()) {
+            throw new IllegalStateException("Chưa cấu hình đầy đủ Gmail API.");
         }
 
-        // Mã hóa token để dùng an toàn trong URL.
-        String encodedToken = URLEncoder.encode(token, StandardCharsets.UTF_8);
-        String baseUrl = appUrl.replaceAll("/+$", "");
-        String resetLink = baseUrl + "/reset-password?token=" + encodedToken;
+        // Ngăn ký tự xuống dòng trong địa chỉ email
+        if (toEmail == null || toEmail.contains("\r") || toEmail.contains("\n")) {
+            throw new IllegalArgumentException("Địa chỉ email không hợp lệ.");
+        }
 
-        // Email HTML đơn giản, có thể thay bằng HTML template cũ nếu muốn.
+        // Tạo liên kết đặt lại mật khẩu
+        String resetLink = appUrl.replaceAll("/+$", "")
+                + "/reset-password?token="
+                + URLEncoder.encode(token, StandardCharsets.UTF_8);
+
+        // Nội dung email
         String html = """
-                <!DOCTYPE html>
-                <html lang="vi">
-                <body style="margin:0;padding:32px 12px;background:#f4f7fb;font-family:Arial,sans-serif;color:#17243c">
-                  <div style="max-width:540px;margin:auto;background:#fff;border-radius:16px;padding:32px;border:1px solid #e4eaf4">
-                    <h2 style="color:#175cd3;margin-top:0">DropSense</h2>
-                    <h3>Khôi phục mật khẩu</h3>
-                    <p>Chúng tôi nhận được yêu cầu đặt lại mật khẩu cho tài khoản DropSense của bạn.</p>
-                    <p>Nhấn nút bên dưới để tạo mật khẩu mới:</p>
-                    <p style="margin:28px 0">
-                      <a href="%s" style="display:inline-block;background:#175cd3;color:white;text-decoration:none;padding:14px 24px;border-radius:10px;font-weight:bold">Đặt lại mật khẩu</a>
-                    </p>
-                    <p>Liên kết có hiệu lực trong <b>15 phút</b> và chỉ sử dụng được một lần.</p>
-                    <p>Nếu không yêu cầu đổi mật khẩu, bạn có thể bỏ qua email này.</p>
-                    <hr style="border:none;border-top:1px solid #e4eaf4;margin:24px 0">
-                    <p style="font-size:12px;color:#77859a">DropSense · Hệ thống hỗ trợ cảnh báo nguy cơ bỏ học</p>
-                  </div>
-                </body>
-                </html>
+                <h2>Khôi phục mật khẩu DropSense</h2>
+                <p>Bạn đã yêu cầu đặt lại mật khẩu.</p>
+                <p>Nhấn vào liên kết bên dưới:</p>
+                <p><a href="%s">Đặt lại mật khẩu</a></p>
+                <p>Nếu không yêu cầu, hãy bỏ qua email này.</p>
                 """.formatted(resetLink);
 
-        // Gửi bằng HTTPS API, không sử dụng cổng SMTP bị Railway chặn.
-        Map<String, Object> request = Map.of(
-                "from", fromEmail,
-                "to", List.of(toEmail),
-                "subject", "DropSense - Khoi phuc mat khau",
-                "html", html
-        );
+        // 2. Dùng Refresh Token để lấy Access Token
+        MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
+        form.add("client_id", clientId);
+        form.add("client_secret", clientSecret);
+        form.add("refresh_token", refreshToken);
+        form.add("grant_type", "refresh_token");
 
+        Map<?, ?> tokenResponse = restClient.post()
+                .uri("https://oauth2.googleapis.com/token")
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .body(form)
+                .retrieve()
+                .body(Map.class);
+
+        if (tokenResponse == null || !(tokenResponse.get("access_token") instanceof String accessToken)) {
+            throw new IllegalStateException("Không lấy được Access Token từ Google.");
+        }
+
+        // 3. Tạo nội dung email theo định dạng MIME
+        String encodedHtml = Base64.getMimeEncoder(
+                76, "\r\n".getBytes(StandardCharsets.US_ASCII)
+        ).encodeToString(html.getBytes(StandardCharsets.UTF_8));
+
+        String mimeMessage = "From: " + fromEmail + "\r\n"
+                + "To: " + toEmail + "\r\n"
+                + "Subject: DropSense - Khoi phuc mat khau\r\n"
+                + "MIME-Version: 1.0\r\n"
+                + "Content-Type: text/html; charset=UTF-8\r\n"
+                + "Content-Transfer-Encoding: base64\r\n"
+                + "\r\n"
+                + encodedHtml;
+
+        // 4. Chuyển email sang Base64 URL-safe
+        String raw = Base64.getUrlEncoder()
+                .withoutPadding()
+                .encodeToString(mimeMessage.getBytes(StandardCharsets.UTF_8));
+
+        // 5. Gửi email bằng Gmail API qua HTTPS
         restClient.post()
-                .uri("/emails")
-                .headers(headers -> headers.setBearerAuth(resendApiKey))
+                .uri("https://gmail.googleapis.com/gmail/v1/users/me/messages/send")
+                .headers(headers -> headers.setBearerAuth(accessToken))
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(request)
+                .body(Map.of("raw", raw))
                 .retrieve()
                 .toBodilessEntity();
     }
