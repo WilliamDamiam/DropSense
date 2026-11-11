@@ -36,14 +36,10 @@ public class DataInitializer implements CommandLineRunner
     @Override
     public void run(String... args)
     {
-        // Tạo tài khoản quản trị mặc định
         createAccount(adminUsername, adminPassword, Role.ADMIN);
-
-        // Tạo tài khoản xem dữ liệu mặc định
         createAccount(viewerUsername, viewerPassword, Role.VIEWER);
     }
 
-    // Chỉ tạo tài khoản nếu chưa tồn tại
     private void createAccount(String username, String password, Role role)
     {
         if (userAccountRepository.existsByUsername(username))
